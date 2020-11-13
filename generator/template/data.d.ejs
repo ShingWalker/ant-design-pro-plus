@@ -1,0 +1,27 @@
+export interface <%= moduleName %>Item {
+<% interfaceData.forEach(function(item){ %>
+  <%= item.name %>?: <%= item.value %>
+<% }) %>
+}
+
+export interface <%= moduleName %>Pagination {
+  total: number;
+  pageSize: number;
+  current: number;
+}
+
+export interface <%= moduleName %>Data {
+  list: <%= moduleName %>Item[];
+  pagination: Partial<<%= moduleName %>Pagination>;
+}
+
+export interface <%= moduleName %>Params {
+  status?: string;
+  name?: string;
+  desc?: string;
+  key?: number;
+  pageSize?: number;
+  currentPage?: number;
+  filter?: { [key: string]: any[] };
+  sorter?: { [key: string]: any };
+}

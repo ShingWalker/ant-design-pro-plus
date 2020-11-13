@@ -1,0 +1,38 @@
+import request from '@/utils/request';
+import { <%= moduleName %>Params, <%= moduleName %>Item } from './data.d';
+
+export async function query<%= moduleName %>(params?: <%= moduleName %>Params) {
+  return request('<%= serverURL.queryURL %>', {
+    params,
+  });
+}
+
+export async function remove<%= moduleName %>(params: { key: number[] }) {
+  return request('<%= serverURL.removeURL %>', {
+    method: 'POST',
+    data: {
+      ...params,
+      method: 'delete',
+    },
+  });
+}
+
+export async function add<%= moduleName %>(params: <%= moduleName %>Item) {
+  return request('<%= serverURL.addURL %>', {
+    method: 'POST',
+    data: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function update<%= moduleName %>(params: <%= moduleName %>Params) {
+  return request('<%= serverURL.updateURL %>', {
+    method: 'POST',
+    data: {
+      ...params,
+      method: 'update',
+    },
+  });
+}
