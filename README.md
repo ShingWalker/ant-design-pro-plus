@@ -33,11 +33,14 @@ $ npm install
 $ yarn
 ```
 ### 目录介绍
+```
 1.generator/template  模板目录
 2.generator/index.js  代码生成器
 3.generator/config.js 生成器配置项
+```
 
 ### 如何使用
+```
 进入到generator/config.js，可以看到三个配置项,分别是
 1.moduleName
   模块名，配置了模块名，代码里会自动替换
@@ -49,6 +52,8 @@ $ yarn
 3.serverURL
   curd接口地址,会自动修改service.ts里的接口地址
 4.配置完config.js之后用node运行enerator/index.js
+```
+
 ```
 node index.js
 ```
