@@ -1,20 +1,23 @@
 export interface <%= moduleName %>Item {
-<% interfaceData.forEach(function(item){ %>
-  <%= item.name %>?: <%= item.value %>
-<% }) %>
+<%interfaceData.forEach(function(item){ -%>
+  <%= item.name %>?: <%= item.value %>;
+<% }) -%>
 }
 
+// 列表、新增、修改
 export interface <%= moduleName %>Pagination {
   total: number;
   pageSize: number;
   current: number;
 }
 
+// 分页
 export interface <%= moduleName %>Data {
   list: <%= moduleName %>Item[];
   pagination: Partial<<%= moduleName %>Pagination>;
 }
 
+// 查询
 export interface <%= moduleName %>Params {
   status?: string;
   name?: string;

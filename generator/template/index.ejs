@@ -1,13 +1,16 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, message, Input, Drawer } from 'antd';
+import { Button, Divider, message } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
-import ProDescriptions from '@ant-design/pro-descriptions';
-import CreateForm from './components/CreateForm';
-import UpdateForm, { FormValueType } from './components/UpdateForm';
+import ModalForm from './components/ModalForm';
 import { <%= moduleName %>Item } from './data.d';
 import { query<%= moduleName %>, update<%= moduleName %>, add<%= moduleName %>, remove<%= moduleName %> } from './service';
+
+export enum modalTypeEnum {
+  'Create' = 0,
+  'Update' = 1,
+}
 
 /**
  * 添加节点
@@ -31,16 +34,11 @@ const handleAdd = async (fields: <%= moduleName %>Item) => {
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: FormValueType) => {
+const handleUpdate = async (fields: <%= moduleName %>Item) => {
   const hide = message.loading('正在配置');
   try {
-    await update<%= moduleName %>({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
+    await update<%= moduleName %>({...fields, id: row?.id});
     hide();
-
     message.success('配置成功');
     return true;
   } catch (error) {
@@ -59,7 +57,7 @@ const handleRemove = async (selectedRows: <%= moduleName %>Item[]) => {
   if (!selectedRows) return true;
   try {
     await remove<%= moduleName %>({
-      key: selectedRows.map((row) => row.key),
+      id: selectedRows.map((row) => row?.id),
     });
     hide();
     message.success('删除成功，即将刷新');
@@ -72,69 +70,81 @@ const handleRemove = async (selectedRows: <%= moduleName %>Item[]) => {
 };
 
 const <%= moduleName %>: React.FC<{}> = () => {
-  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
-  const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
-  const [stepFormValues, setStepFormValues] = useState({});
+  const [modalVisible, handleModalVisible] = useState<boolean>(false);
+  const [modalType, handleModalType] = useState<modalTypeEnum>(modalTypeEnum.Create);
   const actionRef = useRef<ActionType>();
   const [row, setRow] = useState<<%= moduleName %>Item>();
   const [selectedRowsState, setSelectedRows] = useState<<%= moduleName %>Item[]>([]);
+
+  /**
+   * 显示弹窗
+   */
+  const handleShowModal = (modalTypeValue: modalTypeEnum, record?: <%= moduleName %>Item ) => {
+    handleModalType(modalTypeValue);
+    handleModalVisible(true);
+    setRow(record);
+  };
+
+   /**
+   * Modal弹框的props
+   */
+  const modalProps = {
+    row,
+    title: modalType === modalTypeEnum.Create ? '新增' : '修改',
+    width: 780,
+    footer: null,
+    visible: { modalVisible },
+    async onOk(values: <%= moduleName %>Item) {
+      let success: boolean;
+      if(modalType === modalTypeEnum.Create){
+        success = await handleAdd(values);
+      }else {
+        success = await handleUpdate(values);
+      }
+      if (success) {
+        handleModalVisible(false);
+        if (actionRef.current) {
+          actionRef.current.reload();
+        }
+      }
+    },
+    onCancel() {
+      handleModalVisible(false);
+    },
+  };
+
   const columns: ProColumns<<%= moduleName %>Item>[] = [
-    {
-      title: '规则名称',
-      dataIndex: 'name',
-      tip: '规则名称是唯一的 key',
-      formItemProps: {
-        rules: [
-          {
-            required: true,
-            message: '规则名称为必填项',
-          },
-        ],
+  <% columnsData.forEach(function(item){ -%>
+  {
+      title: "<%= item.title %>",
+      dataIndex: "<%= item.dataIndex -%>",
+      <%_ if(item.type){ -%>
+      valueType: "<%= item.type %>",
+      <%_ } -%>
+      <%_ if(item.sorter){ -%>
+      sorter: <%= item.sorter %>,
+      <%_ } -%>
+      <%_ if(item.valueEnum){ -%>
+      valueEnum: <%- JSON.stringify(item.valueEnum) %>,
+      <%_ } -%>
+      <%_ if(item.hideInTable){ -%>
+      hideInTable: <%= item.hideInTable %>,
+      <%_ } -%>
+      <%_ if(item.hideInSearch){ -%>
+      hideInSearch: <%= item.hideInSearch %>,
+      <%_ } -%>
+      <%_ if(item.align){ -%>
+      align: <%= item.align -%>,
+      <%_ } else if(!item.align) { -%>
+      align: "center",
+      <%_ } -%>
+      <%_ if(item.type === 'dateRange' || item.type === 'dateTimeRange' ){ -%>
+      search: {
+        transform: (value: any) => ({ startTime: value[0], endTime: value[1] }),
       },
-      render: (dom, entity) => {
-        return <a onClick={() => setRow(entity)}>{dom}</a>;
-      },
+      <%_ } -%>
     },
-    {
-      title: '描述',
-      dataIndex: 'desc',
-      valueType: 'textarea',
-    },
-    {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val: string) => `${val} 万`,
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      hideInForm: true,
-      valueEnum: {
-        0: { text: '关闭', status: 'Default' },
-        1: { text: '运行中', status: 'Processing' },
-        2: { text: '已上线', status: 'Success' },
-        3: { text: '异常', status: 'Error' },
-      },
-    },
-    {
-      title: '上次调度时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      valueType: 'dateTime',
-      hideInForm: true,
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-        if (`${status}` === '0') {
-          return false;
-        }
-        if (`${status}` === '3') {
-          return <Input {...rest} placeholder="请输入异常原因！" />;
-        }
-        return defaultRender(item);
-      },
-    },
+  <% }) -%>
     {
       title: '操作',
       dataIndex: 'option',
@@ -143,14 +153,13 @@ const <%= moduleName %>: React.FC<{}> = () => {
         <>
           <a
             onClick={() => {
-              handleUpdateModalVisible(true);
-              setStepFormValues(record);
+              handleShowModal(modalTypeEnum.Update, record);
             }}
           >
-            配置
+            修改
           </a>
           <Divider type="vertical" />
-          <a href="">订阅警报</a>
+          <a href="">查看</a>
         </>
       ),
     },
@@ -161,16 +170,22 @@ const <%= moduleName %>: React.FC<{}> = () => {
       <ProTable<<%= moduleName %>Item>
         headerTitle="查询表格"
         actionRef={actionRef}
-        rowKey="key"
+        rowKey="id"
         search={{
           labelWidth: 120,
         }}
         toolBarRender={() => [
-          <Button type="primary" onClick={() => handleModalVisible(true)}>
+          <Button type="primary" onClick={() => handleShowModal(modalTypeEnum.Create)}>
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={(params, sorter, filter) => query<%= moduleName %>({ ...params, sorter, filter })}
+        request={async (params, sorter, filter) => {
+          const data = await query<%= moduleName %>({ ...params, sorter, filter });
+          return {
+            data: data?.data?.records || [],
+            total: data?.data?.total || 0,
+          };
+        }}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
@@ -199,65 +214,7 @@ const <%= moduleName %>: React.FC<{}> = () => {
           <Button type="primary">批量审批</Button>
         </FooterToolbar>
       )}
-      <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
-        <ProTable<<%= moduleName %>Item, <%= moduleName %>Item>
-          onSubmit={async (value) => {
-            const success = await handleAdd(value);
-            if (success) {
-              handleModalVisible(false);
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }}
-          rowKey="key"
-          type="form"
-          columns={columns}
-        />
-      </CreateForm>
-      {stepFormValues && Object.keys(stepFormValues).length ? (
-        <UpdateForm
-          onSubmit={async (value) => {
-            const success = await handleUpdate(value);
-            if (success) {
-              handleUpdateModalVisible(false);
-              setStepFormValues({});
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }}
-          onCancel={() => {
-            handleUpdateModalVisible(false);
-            setStepFormValues({});
-          }}
-          updateModalVisible={updateModalVisible}
-          values={stepFormValues}
-        />
-      ) : null}
-
-      <Drawer
-        width={600}
-        visible={!!row}
-        onClose={() => {
-          setRow(undefined);
-        }}
-        closable={false}
-      >
-        {row?.name && (
-          <ProDescriptions<<%= moduleName %>Item>
-            column={2}
-            title={row?.name}
-            request={async () => ({
-              data: row || {},
-            })}
-            params={{
-              id: row?.name,
-            }}
-            columns={columns}
-          />
-        )}
-      </Drawer>
+      {modalVisible && <ModalForm {...modalProps} />}
     </PageContainer>
   );
 };

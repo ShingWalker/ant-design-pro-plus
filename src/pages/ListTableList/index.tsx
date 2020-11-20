@@ -14,15 +14,15 @@ import { queryRule, updateRule, addRule, removeRule } from './service';
  * @param fields
  */
 const handleAdd = async (fields: TableListItem) => {
-  const hide = message.loading('正在添加');
+  const hide = message.loading('正在新增');
   try {
     await addRule({ ...fields });
     hide();
-    message.success('添加成功');
+    message.success('新增成功');
     return true;
   } catch (error) {
     hide();
-    message.error('添加失败请重试！');
+    message.error('新增失败请重试！');
     return false;
   }
 };
@@ -32,7 +32,7 @@ const handleAdd = async (fields: TableListItem) => {
  * @param fields
  */
 const handleUpdate = async (fields: FormValueType) => {
-  const hide = message.loading('正在配置');
+  const hide = message.loading('正在修改');
   try {
     await updateRule({
       name: fields.name,
@@ -40,12 +40,11 @@ const handleUpdate = async (fields: FormValueType) => {
       key: fields.key,
     });
     hide();
-
-    message.success('配置成功');
+    message.success('修改成功');
     return true;
   } catch (error) {
     hide();
-    message.error('配置失败请重试！');
+    message.error('修改！');
     return false;
   }
 };

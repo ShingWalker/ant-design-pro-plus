@@ -1,6 +1,6 @@
 # Ant-Design-Pro-Plus
 
-基于ant-design-pro v4.30版本新增代码生成器模块,可以快速生成curd代码,减少80%的开发时间
+基于ant-design-pro v4版本新增代码生成器模块,可以快速生成curd代码,减少80%的开发时间
 
 ## 一.
 

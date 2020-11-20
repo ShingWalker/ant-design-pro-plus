@@ -2,7 +2,7 @@
   "name": "ant-design-pro-plus",
   "version": "1.0.0",
   "private": true,
-  "description": "基于ant-design-pro v4.3.0版本，添加代码生成器",
+  "description": "基于ant-design-pro v4版本，添加代码生成器",
   "author": "https://github.com/wobushiaike",
   "scripts": {
     "analyze": "cross-env ANALYZE=1 umi build",

@@ -3,16 +3,16 @@ import { <%= moduleName %>Params, <%= moduleName %>Item } from './data.d';
 
 export async function query<%= moduleName %>(params?: <%= moduleName %>Params) {
   return request('<%= serverURL.queryURL %>', {
-    params,
+    method: 'POST',
+    data: params,
   });
 }
 
-export async function remove<%= moduleName %>(params: { key: number[] }) {
+export async function remove<%= moduleName %>(params: { id: number[] }) {
   return request('<%= serverURL.removeURL %>', {
     method: 'POST',
     data: {
       ...params,
-      method: 'delete',
     },
   });
 }
@@ -22,17 +22,15 @@ export async function add<%= moduleName %>(params: <%= moduleName %>Item) {
     method: 'POST',
     data: {
       ...params,
-      method: 'post',
     },
   });
 }
 
-export async function update<%= moduleName %>(params: <%= moduleName %>Params) {
+export async function update<%= moduleName %>(params: <%= moduleName %>Item) {
   return request('<%= serverURL.updateURL %>', {
     method: 'POST',
     data: {
       ...params,
-      method: 'update',
     },
   });
 }
