@@ -23,8 +23,13 @@ const valueType = {
 exports.config = {
     // 模块名
     moduleName: 'User',
-
+    // 列表columns，及curd配置项
     data: {
+      "id":{
+        id: 'id',
+        hideInSearch: true,
+        hideInForm: true,
+      },
       "username":{
         title: '用户名',
         hideInTable: true,
