@@ -52,12 +52,9 @@ $ yarn
 3.serverURL
   curd接口地址,会自动修改service.ts里的接口地址
 4.配置完config.js之后用node运行enerator/index.js
-```
-
-```
 node index.js
-```
 5.把包移到项目目录下，添加路由即可，具体参照[springbootplus文档](https://pro.ant.design/docs/router-and-nav-cn)
+```
 ### data项配置说明
 
 #### 实例
