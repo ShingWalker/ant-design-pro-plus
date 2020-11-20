@@ -1,9 +1,11 @@
 /**
  * request 网络请求工具
- * 更详细的 api 文档: https://github.com/umijs/umi-request
+ * umi-request api 文档: https://github.com/umijs/umi-request
+ * js-util-plus api 文档: https://wobushiaike.github.io/js-util-plus-doc/
  */
 import { extend } from 'umi-request';
-import { notification } from 'antd';
+import { notification, message } from 'antd';
+import * as $$ from 'js-util-plus';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -51,6 +53,27 @@ const errorHandler = (error: { response: Response }): Response => {
 const request = extend({
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
+  headers: {
+    token: $$.storeCookieGet('token'),
+  },
 });
+
+/**
+ * 返回拦截器
+ */
+request.interceptors.response.use(
+  async (response: Response): Promise<any> => {
+    const result = await response.clone().json();
+    const {
+      success,
+      message: { msg },
+    } = result;
+    if (!success) {
+      message.error(msg);
+      return false;
+    }
+    return response;
+  },
+);
 
 export default request;
