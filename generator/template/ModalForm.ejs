@@ -1,0 +1,158 @@
+import React from 'react';
+import { Modal } from 'antd';
+import ProForm, {
+  ProFormText,
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormDatePicker")) { -%>
+  ProFormDatePicker,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormDateTimePicker")) { -%>
+  ProFormDateTimePicker,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormDateRangePicker")) { -%>
+  ProFormDateRangePicker,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormDateTimeRangePicker")) { -%>
+  ProFormDateTimeRangePicker,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormTimePicker")) { -%>
+  ProFormTimePicker,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormTextArea")) { -%>
+  ProFormTextArea,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormCheckbox")) { -%>
+  ProFormCheckbox,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormRadio")) { -%>
+  ProFormRadio,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormSwitch")) { -%>
+  ProFormSwitch,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormRate")) { -%>
+  ProFormRate,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormUploadDragger")) { -%>
+  ProFormUploadDragger,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormUploadButton")) { -%>
+  ProFormUploadButton,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormSelect")) { -%>
+  ProFormSelect,
+<% } -%>
+<% if ([...new Set(columnsData.map(data=>data.valueType))].includes("ProFormDigit")) { -%>
+  ProFormDigit,
+<% } -%>
+} from '@ant-design/pro-form';
+import { <%= moduleName %>Item } from '../data.d';
+
+export interface FormValueType extends Partial<<%= moduleName %>Item> {}
+
+export interface ModalFormProps {
+  row: FormValueType;
+  width: number;
+  footer: any;
+  visible: boolean;
+  title: string;
+  onOk: (values: FormValueType) => any;
+  onCancel: () => any;
+}
+
+const ModalForm: React.FC<ModalFormProps> = ({row, onOk, ...modalProps }) => {
+  const handleOk = (values: FormValueType) => {
+    const data = values;
+    if(row?.id){
+      data.id = row.id;
+    }
+    onOk(data);
+  };
+
+  const modalOpts = {
+    onFinish: handleOk,
+    initialValues: {...row}
+  };
+
+  return (
+    <Modal {...modalProps}>
+      <ProForm {...modalOpts}>
+        <ProForm.Group>
+          <% columnsData.forEach(function(item){ -%>
+            <% if((item.valueType === 'ProFormText' || !item.valueType) && !item.hideInForm ){ -%>
+              <ProFormText width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" />
+            <% } -%>
+            <% if(item.valueType === 'ProFormText.Password' && !item.hideInForm){ -%>
+              <ProFormText.Password width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" />
+            <% } -%>
+            <% if(item.valueType === 'ProFormDatePicker' && !item.hideInForm){ -%>
+              <ProFormDatePicker width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" />
+            <% } -%>
+            <% if(item.valueType === 'ProFormDateTimePicker' && !item.hideInForm){ -%>
+              <ProFormDateTimePicker width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" />
+            <% } -%>
+            <% if(item.valueType === 'ProFormDateRangePicker' && !item.hideInForm){ -%>
+              <ProFormDateRangePicker width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" />
+            <% } -%>
+            <% if(item.valueType === 'ProFormDateTimeRangePicker' && !item.hideInForm){ -%>
+              <ProFormDateTimeRangePicker width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" />
+            <% } -%>
+            <% if(item.valueType === 'ProFormTimePicker' && !item.hideInForm){ -%>
+              <ProFormTimePicker width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" />
+            <% } -%>
+            <% if(item.valueType === 'ProFormTextArea' && !item.hideInForm){ -%>
+              <ProFormTextArea width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" placeholder="请输入" />
+            <% } -%>
+            <% if(item.valueType === 'ProFormCheckbox' && !item.hideInForm){ -%>
+              <ProFormCheckbox width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" layout="vertical" options={["我不是艾克"]}/>
+            <% } -%>
+            <% if(item.valueType === 'ProFormRadio.Group' && !item.hideInForm){ -%>
+              <ProFormRadio.Group width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" options={[
+                {
+                  label: '我不是艾克',
+                  value: 'wbsak',
+                }, ]}/>
+            <% } -%>
+            <% if(item.valueType === 'ProFormSwitch' && !item.hideInForm){ -%>
+              <ProFormSwitch width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" />
+            <% } -%>
+            <% if(item.valueType === 'ProFormRate' && !item.hideInForm){ -%>
+              <ProFormRate width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" />
+            <% } -%>
+            <% if(item.valueType === 'ProFormSlider' && !item.hideInForm){ -%>
+              <ProFormSlider width="m" name="<%=item.dataIndex%>" label="<%= item.title %>"  />
+            <% } -%>
+            <% if(item.valueType === 'ProFormUploadDragger' && !item.hideInForm){ -%>
+              <ProFormUploadDragger width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" action="upload.do"/>
+            <% } -%>
+            <% if(item.valueType === 'ProFormUploadButton' && !item.hideInForm){ -%>
+              <ProFormUploadButton width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" action="upload.do"/>
+            <% } -%>
+            <% if(item.valueType === 'ProFormSelect' && !item.hideInForm){ -%>
+              <ProFormSelect width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" valueEnum={<% if (item.valueEnum) { -%>
+                <%- JSON.stringify(item.valueEnum) %>
+              <% } else { -%>
+                {
+                  open: '未解决',
+                  closed: '已解决',
+                }
+              <% } -%>
+            }/>
+            <% } -%>
+            <% if(item.valueType === 'ProFormSelectReq' && !item.hideInForm){ -%>
+              <ProFormSelect width="m" name="<%=item.dataIndex%>" label="<%= item.title %>"request={async () => [
+                { label: '全部', value: 'all' },
+                { label: '未解决', value: 'open' },
+                { label: '已解决', value: 'closed' },
+                { label: '解决中', value: 'processing' },
+              ]} />
+            <% } -%>
+            <% if(item.valueType === 'ProFormDigit' && !item.hideInForm){ -%>
+              <ProFormDigit width="m" name="<%=item.dataIndex%>" label="<%= item.title %>" min={1} max={10}/>
+            <% } -%>
+        <% }) %>
+        </ProForm.Group>
+      </ProForm>
+    </Modal>
+  );
+};
+export default ModalForm;
