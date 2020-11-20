@@ -71,6 +71,7 @@ node index.js
 ```
 
 #### 说明
+```
 字段名 -- 必填 -- 作用 -- 默认值
 
 title -- true -- 字段名 -- 无
@@ -79,3 +80,4 @@ hideInForm -- false -- 控制在搜索栏显示 -- false
 hideInTable -- false -- 控制在搜索栏显示 -- false
 valueType --  false -- 控制在搜索栏显示 -- text
 valueEnum -- false -- 默认值的下拉选择框(配合valueType = select使用效果最好)
+```
